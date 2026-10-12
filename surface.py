@@ -37,6 +37,8 @@ HIT_PAD = 4.0
 #: Supersampling for the cached layers: Pillow does not antialias shapes on its own.
 SS = 4
 HIT_ALPHA = 1
+#: Text on the wallpaper is drawn at this opacity, so it blends in rather than glaring.
+BLEND = 0.82
 
 #: Fill colours.
 COLOURS = {
@@ -348,6 +350,7 @@ def hit_box(frame: Frame, text_box: tuple[int, int, int, int]) -> tuple[int, int
 
 def render(frame: Frame) -> Render:
     image, hit = compose(frame)
+    image.putalpha(image.getchannel("A").point(lambda v: int(v * BLEND)))
     # The one-step block that makes the pill and the text draggable; zero everywhere else, so
     # clicks beside the widget reach the desktop.
     block = Image.new("L", image.size, 0)
