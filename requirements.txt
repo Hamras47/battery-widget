@@ -1,0 +1,3 @@
+# Battery desktop widget — runtime dependencies (same minimal set as the clock widget).
+pystray==0.19.5
+pillow==12.3.0
