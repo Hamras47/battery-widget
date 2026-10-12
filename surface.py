@@ -41,12 +41,15 @@ HIT_ALPHA = 1
 BLEND = 0.82
 
 #: Fill colours.
+#: Fill colours: muted, so the pill sits with the rest of the desktop instead of glowing.
 COLOURS = {
-    "ok": (112, 216, 122),
-    "low": (242, 193, 78),
-    "critical": (234, 88, 76),
-    "charging": (96, 224, 140),
+    "ok": (122, 184, 136),
+    "low": (214, 178, 102),
+    "critical": (208, 106, 98),
+    "charging": (112, 196, 150),
 }
+#: How solid the fill is: the wallpaper shows through a little.
+FILL_ALPHA = 0.62
 
 INK = {
     #: outline / text colour, halo colour
@@ -181,7 +184,7 @@ def _gloss(width: int, height: int, unit: float) -> Image.Image:
     middle = top + (bottom - top) * 0.55
     for y in range(height):
         if top <= y < middle:
-            gloss.putpixel((0, y), int(70 * (1 - (y - top) / max(1.0, middle - top))))
+            gloss.putpixel((0, y), int(40 * (1 - (y - top) / max(1.0, middle - top))))
     return gloss.resize((width, height))
 
 
@@ -192,7 +195,7 @@ def _band(width: int, unit: float) -> Image.Image:
     band_w = max(4, int((right - left) * 0.42))
     band = Image.new("L", (band_w, 1), 0)
     for x in range(band_w):
-        band.putpixel((x, 0), int(150 * math.sin(math.pi * x / (band_w - 1)) ** 2))
+        band.putpixel((x, 0), int(100 * math.sin(math.pi * x / (band_w - 1)) ** 2))
     return band
 
 
@@ -303,7 +306,7 @@ def compose(frame: Frame) -> tuple[Image.Image, tuple[int, int, int, int]]:
         fill_alpha = ImageChops.multiply(_fill_mask(frame.width, frame.height, unit), cut)
         rgb = COLOURS["charging" if frame.charging else frame.colour]
         image = Image.alpha_composite(
-            image, _solid(size, rgb, _scaled(fill_alpha, 0.92 * frame.fill_opacity))
+            image, _solid(size, rgb, _scaled(fill_alpha, FILL_ALPHA * frame.fill_opacity))
         )
         image = Image.alpha_composite(
             image,
